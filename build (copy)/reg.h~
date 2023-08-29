@@ -1,0 +1,23 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+// Linear regression function
+void reg(const std::vector<double>& x, const std::vector<double>& y, double& slope, double& intercept) {
+    int n = x.size();
+    double sum_x = 0.0, sum_y = 0.0, sum_x_squared = 0.0, sum_xy = 0.0;
+
+    for (int i = 0; i < n; ++i) {
+        sum_x += x[i];
+        sum_y += y[i];
+        sum_x_squared += x[i] * x[i];
+        sum_xy += x[i] * y[i];
+    }
+
+    double mean_x = sum_x / n;
+    double mean_y = sum_y / n;
+
+    slope = (sum_xy - n * mean_x * mean_y) / (sum_x_squared - n * mean_x * mean_x);
+    intercept = mean_y - slope * mean_x;
+}
+

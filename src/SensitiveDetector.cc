@@ -1,0 +1,155 @@
+#include "SensitiveDetector.hh"
+#include "G4HCofThisEvent.hh"
+#include "G4Step.hh"
+#include "G4ThreeVector.hh"
+#include "G4SDManager.hh"
+#include "G4ios.hh"
+#include "G4RunManager.hh"
+#include "G4Event.hh"
+#include "G4ParticleDefinition.hh"
+//#include "SystemOfUnits.h"
+
+namespace B1
+  {
+    SensitiveDetector:: SensitiveDetector(const G4String&SensitiveDetectorname, const G4String& hitsCollectionName)
+      : G4VSensitiveDetector(SensitiveDetectorname)
+    {
+      collectionName.insert(hitsCollectionName);//collection name
+      // collectionName.insert(SensitiveDetectorName);
+    }
+
+    // SensitiveDetector:: ~ SensitiveDetector()
+    // {}
+
+
+    void  SensitiveDetector::Initialize(G4HCofThisEvent* hce)
+    { // collection (~ NOT collection name)
+      
+      fHitsCollection
+      	= new SensitiveDetectorHitsCollection( SensitiveDetectorName, collectionName[0]);
+      if(hcID<0){
+       hcID = G4SDManager::GetSDMpointer()->GetCollectionID(collectionName[0]);
+      }
+      hce->AddHitsCollection(hcID, fHitsCollection);
+    }
+
+
+    G4bool  SensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory* r )
+
+    {
+      G4int eventid= G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+      //energy deposit
+      G4double edep = aStep->GetTotalEnergyDeposit();
+       G4ThreeVector pos = aStep->GetPostStepPoint()->GetPosition();
+       //   if (edep==0.) return false;
+      
+      SensitiveDetectorHit* newHit = new  SensitiveDetectorHit();
+      // auto newHit = new SensitiveDetectorHit();
+      G4int  PlaneNb= aStep->GetPreStepPoint()->GetTouchableHandle()->GetCopyNumber();
+       G4int pdgid  = aStep->GetTrack()->GetParticleDefinition()->GetPDGEncoding();
+      G4int trackid = aStep->GetTrack()->GetTrackID();
+      G4double tracklength= aStep->GetTrack()->GetTrackLength();
+      newHit->SetPDGID(pdgid);
+      newHit->SetPlaneNb(PlaneNb);
+      newHit->SetTrackID(trackid);
+      newHit->SetEdep(edep);
+      newHit->SetPos(pos);
+      newHit->SetEventId(eventid);
+      newHit->SetTrackLength(tracklength);
+      //cd newHit->SetPos(pos);
+      G4ThreeVector momentum = aStep->GetTrack()->GetMomentum();
+      
+      //kinetic energy
+      G4double initialKE = aStep->GetPreStepPoint()->GetKineticEnergy();
+      G4double energyDeposit = aStep->GetTotalEnergyDeposit();
+      G4double finalKE = initialKE - energyDeposit;
+      //   G4int evt = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
+
+  // Retrieve momentum components
+      //   G4double px = momentum.x();
+      //G4double py = momentum.y();
+      G4double pz = momentum.z();
+      G4double phi = momentum.phi();
+      G4double theta = momentum.theta();
+      newHit->SetPz(pz); // Store momentum components
+      newHit->SetPhi(phi);
+      newHit->SetTheta(theta);
+      newHit->SetKe(finalKE);
+      
+      G4AnalysisManager *analysisManager =  G4AnalysisManager::Instance();
+      // analysisManager->FillNtupleDColumn(0, edep);
+      //   analysisManager->FillNtupleDColumn(1, pos[0]);
+      //   fHitsCollection->insert(newHit);
+       //saving outputs into a root file
+      //   G4AnalysisManager *analysisManager =  G4AnalysisManager::Instance();
+      /* analysisManager->FillNtupleIColumn(0, evt);
+        analysisManager->FillNtupleDColumn(1,pz );
+      analysisManager->FillNtupleDColumn(2, phi);
+      analysisManager->FillNtupleDColumn(3, edep);
+      analysisManager->FillNtupleDColumn(4, pos[0]);
+      analysisManager->FillNtupleDColumn(5, pos[1]);
+      analysisManager->FillNtupleDColumn(6, pos[2]);
+      analysisManager->FillNtupleDColumn(7, theta);
+      if (PlaneNb==0) {
+       analysisManager->FillNtupleDColumn(8, pos[0]);
+      analysisManager->FillNtupleDColumn(9, pos[1]);
+      analysisManager->FillNtupleDColumn(10, pos[2]);
+       }
+
+       if (PlaneNb==1) {
+       analysisManager->FillNtupleDColumn(11, pos[0]);
+      analysisManager->FillNtupleDColumn(12, pos[1]);
+      analysisManager->FillNtupleDColumn(13, pos[2]);
+       }
+        if (PlaneNb==2) {
+       analysisManager->FillNtupleDColumn(14, pos[0]);
+      analysisManager->FillNtupleDColumn(15, pos[1]);
+      analysisManager->FillNtupleDColumn(16, pos[2]);
+       }
+
+      if (PlaneNb==3) {
+       analysisManager->FillNtupleDColumn(15, pos[0]);
+      analysisManager->FillNtupleDColumn(16, pos[1]);
+      analysisManager->FillNtupleDColumn(17, pos[2]);
+       }
+     
+      //  analysisManager->FillNtupleDColumn(8,PlaneNb );
+      
+      
+      analysisManager->AddNtupleRow(0);*/
+      newHit->Print();
+      
+      fHitsCollection->insert(newHit);
+      return true;
+     
+
+    }
+
+
+    void  SensitiveDetector::EndOfEvent(G4HCofThisEvent*)
+    {
+      /* auto analysisManager = G4AnalysisManager::Instance();
+        
+      if(verboseLevel>1) {
+		G4int nofHits = fHitsCollection->entries();
+
+	G4cout<< G4endl
+	      <<"_____hits collection in this event " << nofHits
+	      << "hits in the tracker chambers:"<< G4endl;
+	//	for (G4int i=0; i<nofHits; i++) {//*fHitsCollection)[i]->Print();
+
+	// SensitiveDetectorHit*  newHit = (*fHitsCollection)[i];
+	// G4int eventid= newHit->GetEventId();
+	G4int eventid= G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID();
+	G4cout<<"Event idd" << eventid <<G4endl;
+	    analysisManager->FillNtupleDColumn(0,7, eventid);
+	    analysisManager->AddNtupleRow(0);
+	    
+	
+
+    } */
+
+
+  }
+}
+      

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+
+# Step 2: Remove the /build directory with sudo privileges
+sudo rm -R /build
+
+# Step 3: Recreate the /build directory and change into it
+sudo mkdir build && cd build
+
+# Step 4: Run CMake with sudo privileges
+sudo cmake ..
+
+# Step 5: Run make command with sudo privileges using 7 threads
+sudo make -j7
+#enter into the bash
+sudo su
+
+#Run the example
+./exampleB1

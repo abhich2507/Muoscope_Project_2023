@@ -1,0 +1,100 @@
+﻿#ifndef B1SensitiveDetectorHit_h
+#define B1SensitiveDetectorHit_h 1
+
+#include "G4VHit.hh"
+#include "G4THitsCollection.hh"
+#include "G4Allocator.hh"
+#include "G4ThreeVector.hh"
+#include "tls.hh"
+
+ namespace B1
+ {
+
+   
+   class SensitiveDetectorHit : public G4VHit
+  {
+
+    public :
+    SensitiveDetectorHit() =default;
+    SensitiveDetectorHit(const SensitiveDetectorHit&)= default;
+    ~SensitiveDetectorHit() override =default;
+
+    //some operators
+    SensitiveDetectorHit& operator =(const SensitiveDetectorHit&) = default;
+    G4bool operator ==(const SensitiveDetectorHit&) const;
+
+    inline void* operator new(size_t);
+    inline void  operator delete(void*);
+    // void operator delete(void* ptr);
+
+
+    //overridng the methods from the base class
+    void Draw() override;
+    void Print() override;
+
+    ///
+    
+     void SetstationID( G4int z ) { fStationID = z; };
+    G4int GetStationID() const { return fStationID; };
+
+     void SetPlaneNb(G4int plane) {fPlaneNb = plane;}
+     void SetEdep( G4double de ) { fEdep = de; };
+     void SetKe( G4double de ){ fKe = de; };
+     void SetPz( G4double dp ) { fPz = dp; };
+     void SetPhi( G4double dp ) { fPhi = dp; };
+    void SetTheta(G4double dt) {fTheta= dt;};
+
+     void AddEdep(G4double de) { fEdep+=de; };
+     G4double GetEdep() const { return fEdep; }
+    G4double GetPlaneNb() const {return fPlaneNb;}
+     G4double GetKe() const { return fKe; }
+     G4double GetPz() const { return fPz; }
+     G4double GetPhi() const { return fPhi; }
+    G4double GetTheta() const{return fTheta; }
+     
+     void SetPos( G4ThreeVector xyz) { fPos = xyz; };
+     G4ThreeVector GetPos() const { return fPos; }
+    
+     void SetTrackID(G4int id) { fTrackID= id; };
+    G4int GetTrackID() const { return fTrackID; };
+
+    void SetPDGID(G4int pdgid) {fPDGID = pdgid;};
+    G4int GetPDGID() const {return fPDGID;}
+     
+  private:
+    G4double fEdep =0.;
+    G4double fKe = 0.;
+    G4int fStationID;
+    G4double fPz;
+    G4double fPhi;
+    G4double fTheta;
+    G4int fPlaneNb ;
+    G4int fTrackID= 0;
+    G4int fChamberNb = -1;
+    G4ThreeVector fPos;
+    G4int fPDGID;
+  };
+
+
+   // typedef G4THitsCollection<SensitiveDetectorHit> SensitiveDetectorHitsCollection;
+   //The hits collections can be accesses in different 
+   //phases of tracking
+   //At the end of each event, through the G4Event (aposteriori event analysis)
+   using SensitiveDetectorHitsCollection = G4THitsCollection<SensitiveDetectorHit>;
+   
+   extern G4ThreadLocal G4Allocator <SensitiveDetectorHit>*   SensitiveDetectorHitAllocator;
+
+   inline void*   SensitiveDetectorHit::operator new(size_t)
+   {
+     if(!SensitiveDetectorHitAllocator)
+       SensitiveDetectorHitAllocator = new G4Allocator<SensitiveDetectorHit>;
+     return(void *)   SensitiveDetectorHitAllocator->MallocSingle();
+   }
+     inline void   SensitiveDetectorHit::operator delete(void *hit)
+     {   SensitiveDetectorHitAllocator->FreeSingle((  SensitiveDetectorHit*) hit);
+
+     }
+
+   }
+
+#endif

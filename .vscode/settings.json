@@ -1,0 +1,30 @@
+{
+    "files.associations": {
+        "MyClass.C": "cpp",
+        "MyClassX.C": "cpp",
+        "myMacro.C": "cpp",
+        "*.icc": "cpp",
+        "ostream": "cpp",
+        "MyClass_20230626143107.C": "cpp",
+        "vec2": "cpp",
+        "vec3": "cpp",
+        "vec4": "cpp",
+        "vector3": "cpp",
+        "event": "cpp",
+        "point": "cpp",
+        "random": "cpp",
+        "h1": "cpp",
+        "h2": "cpp",
+        "h3": "cpp",
+        "new": "cpp",
+        "array": "cpp",
+        "deque": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp"
+    },
+    "git.ignoreLimitWarning": true,
+    "cmake.configureOnOpen": false
+}
