@@ -4,7 +4,9 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/include",
-                "/home/abhishek/Documents/Muography/summer_project/**"
+                "/home/abhishek/Project/**",
+                "/home/abhishek/Geant4/geant4_install/**",
+                "/home/abhishek/ROOT/**",
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

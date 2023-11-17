@@ -39,6 +39,7 @@
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
+#include "G4AnalysisManager.hh"
 
 namespace B1
 {
@@ -50,12 +51,19 @@ namespace B1
     G4VUserPrimaryGeneratorAction(),
   fParticleGun(0), mu_plus(0), mu_minus(0) 
     
-  { fMuonGen.SetUseSky();
+  {
+
+    // fMuonGen.SetUseHSphere();
+    // fMuonGen.SetHSphereRadius(10.*cm);
+    // fMuonGen.SetHSphereCenterPosition({{0., 0.,-15.*cm}});
+  fMuonGen.SetUseSky();
   fMuonGen.SetSkySize({{16.*cm, 16.*cm}});
-  fMuonGen.SetSkyCenterPosition({{0., 0.,-5.*cm}}); 
-  fMuonGen.SetMinimumTheta(-0.5);
-  fMuonGen.SetMaximumTheta(0.5);
- fMuonGen.SetMinimumMomentum(15);
+  fMuonGen.SetSkyCenterPosition({{0., 0.,-3.*cm}}); 
+//  fMuonGen.SetMinimumTheta(0.000);
+//  fMuonGen.SetMaximumTheta(0.0001);
+   fMuonGen.SetMinimumMomentum(0.050);
+//  fMuonGen.SetMaximumMomentum(5.240);
+
 
   G4int n_particle = 1;
   fParticleGun  = new G4ParticleGun(n_particle);
@@ -86,11 +94,14 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // In order to avoid dependence of PrimaryGeneratorAction
   // on DetectorConstruction class we get Envelope volume
   // from G4LogicalVolumeStore.
- 
+ auto analysisManager = G4AnalysisManager::Instance();
   
    fMuonGen.Generate();
   std:: array<double,3> muon_pos = fMuonGen.GetGenerationPosition();
   double muon_ptot = -fMuonGen.GetGenerationMomentum();
+ 
+  analysisManager->FillNtupleDColumn(1,4,muon_ptot);
+  analysisManager->AddNtupleRow(1);
   double muon_theta = fMuonGen.GetGenerationTheta();
   double muon_phi = fMuonGen.GetGenerationPhi();
 
@@ -101,7 +112,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   fParticleGun->SetParticleMomentum( G4ParticleMomentum(muon_ptot*sin(muon_theta)*cos(muon_phi)*GeV,
 							muon_ptot*sin(muon_theta)*sin(muon_phi)*GeV,
-							muon_ptot*cos(muon_theta)*GeV) );
+							muon_ptot*cos(muon_theta)*GeV));
 
 
 
@@ -137,7 +148,8 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   */
   if (fMuonGen.GetCharge() <0 ) {
     fParticleGun->SetParticleDefinition(mu_minus);
-  } else { fParticleGun->SetParticleDefinition(mu_plus);
+   } 
+  else { fParticleGun->SetParticleDefinition(mu_plus);
   }
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }

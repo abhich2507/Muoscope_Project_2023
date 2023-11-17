@@ -145,6 +145,7 @@ RunAction::RunAction(EventAction* eventAction)
  analysisManager->CreateNtupleDColumn("PDGID");
  analysisManager->CreateNtupleDColumn("x-position");
  analysisManager->CreateNtupleDColumn("y-position");
+  analysisManager->CreateNtupleDColumn("GenM");
 
  analysisManager->FinishNtuple();
 

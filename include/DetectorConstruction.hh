@@ -60,8 +60,13 @@ class DetectorConstruction : public G4VUserDetectorConstruction
 
   protected:
     G4LogicalVolume** fLogicPlane = nullptr;
-     G4LogicalVolume** fLogicPlaneG1 = nullptr;
-      G4LogicalVolume** fLogicPlaneG2= nullptr;
+    G4LogicalVolume** fLogicPlaneG1 = nullptr;
+    G4LogicalVolume** fLogicPlaneG2= nullptr;
+    G4LogicalVolume** fLogicPlaneAc= nullptr;
+    G4LogicalVolume** fLogicPlaneSheet= nullptr;
+    G4LogicalVolume** fLogicPlanePCB= nullptr;
+     G4LogicalVolume** fLogicPlanestrips= nullptr;
+     G4LogicalVolume** fLogicPlanePlates= nullptr;
 
     G4LogicalVolume* fScoringVolume = nullptr;
     G4UserLimits* fStepLimit = nullptr; // pointer to user step limits

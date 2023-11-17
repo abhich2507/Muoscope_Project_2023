@@ -18,124 +18,125 @@ class ROOTManager
 {
 
   static const int MaxNGenPart = 500;
-  static const int MaxNScintHit = 500;
+  static const int MaxNRPCHit = 500;
   
   struct ROOTTreeStruct_t {
 //Generator
     Int_t Event;
-    Int_t  NScintHit;  
+    Int_t  NRPCHit;  
     Int_t NGenPart;
     Int_t GenPartID[MaxNGenPart];
     //Int_t GenPartPDG[MaxNGenPart];
-    Int_t GenPartPDG;
-      Float_t GenPartE;
+    Int_t GenPartPDG[MaxNGenPart];
+      Float_t GenPartE[MaxNGenPart];
+      Float_t GenPartM;
     //  Float_t GenPartE[MaxNGenPart];
     // Float_t GenPartTheta[MaxNGenPart];
-    Float_t GenPartTheta;
-    Float_t GenPartPhi;
+    Float_t GenPartTheta[MaxNGenPart];
+    Float_t GenPartPhi[MaxNGenPart];
     Float_t GenPartThetaMinus[MaxNGenPart];
    // Float_t GenPartPhi[MaxNGenPart];
 
 
 //G4Particle
-    Int_t ScintHitPrimaryID[MaxNScintHit];
-    Float_t ScintHitE[MaxNScintHit];
-    Float_t ScintHitPosX[MaxNScintHit];
-    Float_t ScintHitPosY[MaxNScintHit];
-    Float_t ScintHitPosZ[MaxNScintHit];
-    Int_t ScintHitStation[MaxNScintHit];
-    Int_t ScintHitModule[MaxNScintHit];
-    Int_t HitPDG[MaxNScintHit];
-    Int_t ScintHitBar[MaxNScintHit];
-    Float_t ScintHitKe[MaxNScintHit];
-    Float_t ScintHitPz[MaxNScintHit];
-    Float_t ScintHitPhi[MaxNScintHit];
-    Float_t ScintHitPosXWo[MaxNScintHit];
-    Float_t ScintHitSmear[MaxNScintHit];
-    Float_t ScintHitPosYWo[MaxNScintHit];
-    Float_t ScintHitPosZWo[MaxNScintHit];
+    Int_t RPCHitPrimaryID[MaxNRPCHit];
+    Float_t RPCHitE[MaxNRPCHit];
+    Float_t RPCHitPosX[MaxNRPCHit];
+    Float_t RPCHitPosY[MaxNRPCHit];
+    Float_t RPCHitPosZ[MaxNRPCHit];
+    Int_t RPCHitStation[MaxNRPCHit];
+    Int_t RPCHitModule[MaxNRPCHit];
+    Int_t HitPDG[MaxNRPCHit];
+    Int_t RPCHitBar[MaxNRPCHit];
+    Float_t RPCHitKe[MaxNRPCHit];
+    Float_t RPCHitPz[MaxNRPCHit];
+    Float_t RPCHitPhi[MaxNRPCHit];
+    Float_t RPCHitPosXWo[MaxNRPCHit];
+    Float_t RPCHitSmear[MaxNRPCHit];
+    Float_t RPCHitPosYWo[MaxNRPCHit];
+    Float_t RPCHitPosZWo[MaxNRPCHit];
             
-    Int_t ScintHitTrackID[MaxNScintHit];
-    Float_t ScintHitTime[MaxNScintHit];
+    Int_t RPCHitTrackID[MaxNRPCHit];
+    Float_t RPCHitTime[MaxNRPCHit];
 
-    Float_t ScintHitTrackLength[MaxNScintHit];
+    Float_t RPCHitTrackLength[MaxNRPCHit];
 //my edits separation of station
-   Int_t NScintHitX1; 
-   Int_t NScintHitX2; 
-   Int_t NScintHitX3; 
-   Int_t NScintHitX4;   
+   Int_t NRPCHitX1; 
+   Int_t NRPCHitX2; 
+   Int_t NRPCHitX3; 
+   Int_t NRPCHitX4;   
 
-   Int_t NScintHitY1; 
-   Int_t NScintHitY2; 
-   Int_t NScintHitY3; 
-   Int_t NScintHitY4;   
-
-
-    Float_t ScintHitPosXStationX4[MaxNScintHit];
-    Float_t ScintHitPosYStationX4[MaxNScintHit];
-    Float_t ScintHitPosZStationX4[MaxNScintHit];
-    Int_t ScintHitBarStationX4[MaxNScintHit];
-    Int_t ScintHitModuleStationX4[MaxNScintHit];
-    Float_t ScintHitEStationX4[MaxNScintHit];
-    Float_t ScintHitKeStationX4[MaxNScintHit];
-
-    Float_t ScintHitPosXStationY4[MaxNScintHit];
-    Float_t ScintHitPosYStationY4[MaxNScintHit];
-    Float_t ScintHitPosZStationY4[MaxNScintHit];
-    Int_t ScintHitBarStationY4[MaxNScintHit];
-    Int_t ScintHitModuleStationY4[MaxNScintHit];
-    Float_t ScintHitEStationY4[MaxNScintHit];
-    Float_t ScintHitKeStationY4[MaxNScintHit];
+   Int_t NRPCHitY1; 
+   Int_t NRPCHitY2; 
+   Int_t NRPCHitY3; 
+   Int_t NRPCHitY4;   
 
 
-    Float_t ScintHitPosXStationX1[MaxNScintHit];
-    Float_t ScintHitPosYStationX1[MaxNScintHit];
-    Float_t ScintHitPosZStationX1[MaxNScintHit];
-    Int_t ScintHitBarStationX1[MaxNScintHit];
-    Int_t ScintHitModuleStationX1[MaxNScintHit];
-    Float_t ScintHitEStationX1[MaxNScintHit];
-    Float_t ScintHitKeStationX1[MaxNScintHit];
+    Float_t RPCHitPosXStationX4[MaxNRPCHit];
+    Float_t RPCHitPosYStationX4[MaxNRPCHit];
+    Float_t RPCHitPosZStationX4[MaxNRPCHit];
+    Int_t RPCHitBarStationX4[MaxNRPCHit];
+    Int_t RPCHitModuleStationX4[MaxNRPCHit];
+    Float_t RPCHitEStationX4[MaxNRPCHit];
+    Float_t RPCHitKeStationX4[MaxNRPCHit];
 
-    Float_t ScintHitPosXStationY1[MaxNScintHit];
-    Float_t ScintHitPosYStationY1[MaxNScintHit];
-    Float_t ScintHitPosZStationY1[MaxNScintHit];
-    Int_t ScintHitBarStationY1[MaxNScintHit];
-    Int_t ScintHitModuleStationY1[MaxNScintHit];
-    Float_t ScintHitEStationY1[MaxNScintHit];
-    Float_t ScintHitKeStationY1[MaxNScintHit];
-
-    Float_t ScintHitPosXStationX2[MaxNScintHit];
-    Float_t ScintHitPosYStationX2[MaxNScintHit];
-    Float_t ScintHitPosZStationX2[MaxNScintHit];
-    Int_t ScintHitBarStationX2[MaxNScintHit];
-    Int_t ScintHitModuleStationX2[MaxNScintHit];
-    Float_t ScintHitEStationX2[MaxNScintHit];
-    Float_t ScintHitKeStationX2[MaxNScintHit];
-
-    Float_t ScintHitPosXStationY2[MaxNScintHit];
-    Float_t ScintHitPosYStationY2[MaxNScintHit];
-    Float_t ScintHitPosZStationY2[MaxNScintHit];
-    Int_t ScintHitBarStationY2[MaxNScintHit];
-    Int_t ScintHitModuleStationY2[MaxNScintHit];
-    Float_t ScintHitEStationY2[MaxNScintHit];
-    Float_t ScintHitKeStationY2[MaxNScintHit];
+    Float_t RPCHitPosXStationY4[MaxNRPCHit];
+    Float_t RPCHitPosYStationY4[MaxNRPCHit];
+    Float_t RPCHitPosZStationY4[MaxNRPCHit];
+    Int_t RPCHitBarStationY4[MaxNRPCHit];
+    Int_t RPCHitModuleStationY4[MaxNRPCHit];
+    Float_t RPCHitEStationY4[MaxNRPCHit];
+    Float_t RPCHitKeStationY4[MaxNRPCHit];
 
 
-    Float_t ScintHitPosXStationX3[MaxNScintHit];
-    Float_t ScintHitPosYStationX3[MaxNScintHit];
-    Float_t ScintHitPosZStationX3[MaxNScintHit];
-    Int_t ScintHitBarStationX3[MaxNScintHit];
-    Int_t ScintHitModuleStationX3[MaxNScintHit];
-    Float_t ScintHitEStationX3[MaxNScintHit];
-    Float_t ScintHitKeStationX3[MaxNScintHit];
+    Float_t RPCHitPosXStationX1[MaxNRPCHit];
+    Float_t RPCHitPosYStationX1[MaxNRPCHit];
+    Float_t RPCHitPosZStationX1[MaxNRPCHit];
+    Int_t RPCHitBarStationX1[MaxNRPCHit];
+    Int_t RPCHitModuleStationX1[MaxNRPCHit];
+    Float_t RPCHitEStationX1[MaxNRPCHit];
+    Float_t RPCHitKeStationX1[MaxNRPCHit];
 
-    Float_t ScintHitPosXStationY3[MaxNScintHit];
-    Float_t ScintHitPosYStationY3[MaxNScintHit];
-    Float_t ScintHitPosZStationY3[MaxNScintHit];
-    Int_t ScintHitBarStationY3[MaxNScintHit];
-    Int_t ScintHitModuleStationY3[MaxNScintHit];
-    Float_t ScintHitEStationY3[MaxNScintHit];
-    Float_t ScintHitKeStationY3[MaxNScintHit];
+    Float_t RPCHitPosXStationY1[MaxNRPCHit];
+    Float_t RPCHitPosYStationY1[MaxNRPCHit];
+    Float_t RPCHitPosZStationY1[MaxNRPCHit];
+    Int_t RPCHitBarStationY1[MaxNRPCHit];
+    Int_t RPCHitModuleStationY1[MaxNRPCHit];
+    Float_t RPCHitEStationY1[MaxNRPCHit];
+    Float_t RPCHitKeStationY1[MaxNRPCHit];
+
+    Float_t RPCHitPosXStationX2[MaxNRPCHit];
+    Float_t RPCHitPosYStationX2[MaxNRPCHit];
+    Float_t RPCHitPosZStationX2[MaxNRPCHit];
+    Int_t RPCHitBarStationX2[MaxNRPCHit];
+    Int_t RPCHitModuleStationX2[MaxNRPCHit];
+    Float_t RPCHitEStationX2[MaxNRPCHit];
+    Float_t RPCHitKeStationX2[MaxNRPCHit];
+
+    Float_t RPCHitPosXStationY2[MaxNRPCHit];
+    Float_t RPCHitPosYStationY2[MaxNRPCHit];
+    Float_t RPCHitPosZStationY2[MaxNRPCHit];
+    Int_t RPCHitBarStationY2[MaxNRPCHit];
+    Int_t RPCHitModuleStationY2[MaxNRPCHit];
+    Float_t RPCHitEStationY2[MaxNRPCHit];
+    Float_t RPCHitKeStationY2[MaxNRPCHit];
+
+
+    Float_t RPCHitPosXStationX3[MaxNRPCHit];
+    Float_t RPCHitPosYStationX3[MaxNRPCHit];
+    Float_t RPCHitPosZStationX3[MaxNRPCHit];
+    Int_t RPCHitBarStationX3[MaxNRPCHit];
+    Int_t RPCHitModuleStationX3[MaxNRPCHit];
+    Float_t RPCHitEStationX3[MaxNRPCHit];
+    Float_t RPCHitKeStationX3[MaxNRPCHit];
+
+    Float_t RPCHitPosXStationY3[MaxNRPCHit];
+    Float_t RPCHitPosYStationY3[MaxNRPCHit];
+    Float_t RPCHitPosZStationY3[MaxNRPCHit];
+    Int_t RPCHitBarStationY3[MaxNRPCHit];
+    Int_t RPCHitModuleStationY3[MaxNRPCHit];
+    Float_t RPCHitEStationY3[MaxNRPCHit];
+    Float_t RPCHitKeStationY3[MaxNRPCHit];
 
 
 

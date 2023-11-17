@@ -46,7 +46,8 @@
 #include "G4GDMLParser.hh"
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
-
+#include "G4SubtractionSolid.hh"
+#include "G4PVReplica.hh"
 namespace B1
 {
 
@@ -69,17 +70,17 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   // Envelope parameters
   //
-  G4double env_sizeXY = 150*cm, env_sizeZ = 150*cm;
+  G4double env_sizeXY = 150*cm, env_sizeZ = 250*cm;
   G4Material* env_mat = nist->FindOrBuildMaterial("G4_WATER");
 
 
  
   //creating CO2
   
-G4double a = 12*g/mole;  //carbon
+G4double a;//carbon
 G4int z;
-G4Element* elC = new G4Element("Carbon", "C", z=6, a);
- 
+G4Element* elC = new G4Element("Carbon", "C", z=6, a=12*g/mole );
+G4Element* elH = new G4Element("Hydrogen", "H", z=1, a=1.00794*g/mole);
  a = 16.00*g/mole;     //
 G4Element* elO = new G4Element("Oxygen", "O", z=8, a);
 G4Element* elSi = new G4Element("Silicon", "Si", z=14., a= 28.0855*g/mole);
@@ -157,6 +158,39 @@ Aerog->AddMaterial(CO2, fractionmassCO2);
     G4Material* galacticVacuumMaterial = new G4Material(materialName, density, 1, kStateGas, temperature, pressure);
     galacticVacuumMaterial->AddMaterial(nistManager->FindOrBuildMaterial("G4_Galactic"), 1.0); 
 
+
+  //FR4 Material
+  G4Material* Epoxy = new G4Material("Epoxy" , 1.2*g/cm3, 2);
+    Epoxy->AddElement(elH, 0.50);
+    Epoxy->AddElement(elC, 0.50);
+    
+    G4Material* SiO2 = new G4Material("SiO2",2.200*g/cm3, 2);
+    SiO2->AddElement(elSi,0.33);
+    SiO2->AddElement(elO, 0.67);
+    
+    
+    G4Material* FR4 = new G4Material("FR4" ,1.86*g/cm3, 2);
+    FR4->AddMaterial(Epoxy, 0.472);
+    FR4->AddMaterial(SiO2, 0.528);
+
+
+//Acrylic Box
+
+   G4Material* Acrylic = new G4Material ("Acrylic", density= 1.15*g/cm3, ncomponents=3);
+  Acrylic->AddElement(elC,natoms=5);
+  Acrylic->AddElement(elH,natoms=8);
+  Acrylic->AddElement(elO,natoms=2);
+
+// Mylar
+ //G4Material* Mylar = nist->FindOrBuildMaterial("G4_MYLAR");
+ G4Material* Mylar = 
+  new G4Material("Mylar", density= 1.40*g/cm3, ncomponents=3);
+   Mylar->AddElement(elH, natoms=4);
+   Mylar->AddElement(elC, natoms=5);
+   Mylar->AddElement(elO, natoms=2);
+
+//copper
+G4Material* copper = nist->FindOrBuildMaterial("G4_Cu");
   // Option to switch on/off checking of volumes overlaps
   //
   G4bool checkOverlaps = true;
@@ -171,7 +205,7 @@ Aerog->AddMaterial(CO2, fractionmassCO2);
 
   G4Box* solidWorld =
     new G4Box("World",                       //its name
-      .1*world_sizeXY, 0.1*world_sizeXY, 0.3*world_sizeZ);     //its size
+      .3*world_sizeXY, 0.3*world_sizeXY, 0.5*world_sizeZ);     //its size
 
   G4LogicalVolume* logicWorld =
     new G4LogicalVolume(solidWorld,galacticVacuumMaterial,  "World");            //its name
@@ -213,13 +247,15 @@ Aerog->AddMaterial(CO2, fractionmassCO2);
   G4double z0=0.5*cm;
   G4double G20= 0.75*cm;
 
-  G4double G11= 27.4*cm;
-  G4double z1=27.65*cm;
-  G4double G12= 27.90*cm;
+  // G4double G11= 27.4*cm;
+  // G4double z1=27.65*cm;
+  // G4double G12= 27.90*cm;
 
-  /*G4double G11= 10.4*cm;
-  G4double z1=10.5*cm;
-  G4double G12= 10.6*cm;*/
+  // G4double G11= 12.4*cm;
+  //  G4double z1=12.65*cm;
+  //  G4double G12= 12.90*cm;
+
+  
 
   G4double G1_pos;
   G4double z_pos;
@@ -228,30 +264,36 @@ Aerog->AddMaterial(CO2, fractionmassCO2);
  fLogicPlaneG1 = new G4LogicalVolume*[fNbOfPlanes] ;
  fLogicPlane = new G4LogicalVolume*[fNbOfPlanes];
  fLogicPlaneG2 = new G4LogicalVolume*[fNbOfPlanes] ;
+ fLogicPlaneAc = new G4LogicalVolume*[fNbOfPlanes];
+ fLogicPlaneSheet = new G4LogicalVolume*[fNbOfPlanes];
+ fLogicPlanePCB = new G4LogicalVolume*[fNbOfPlanes];
+ fLogicPlanestrips = new G4LogicalVolume*[fNbOfPlanes];
+ fLogicPlanePlates= new G4LogicalVolume*[fNbOfPlanes];
 
+ double gap1=0.;
+ double gap2=0.;
+ double gap3=0.;
   //Building four parrallel planes
   for (G4int copyNo=0; copyNo<fNbOfPlanes; copyNo++) {
+     double gg=7.5;
+     double inner_d= 20;
    if(copyNo<2){ 
-       z_pos=  z0 + (10*cm)*copyNo;
-       G1_pos=  G10 + (10*cm)*copyNo;
-       G2_pos=  G20 + (10*cm)*copyNo;
+   
+       z_pos=  z0 + (gg*cm)*copyNo;
+       G1_pos=  G10 + (gg*cm)*copyNo;
+       G2_pos=  G20 + (gg*cm)*copyNo;
+       gap1=z_pos;
+       gap2=G1_pos;
+       gap3=G2_pos;
        }
 
     if(copyNo>=2){ 
-        z_pos=  z1 + (10*cm)*copyNo;
-        G1_pos=  G11 + (10*cm)*copyNo;
-        G2_pos=  G12 + (10*cm)*copyNo;
+   
+        z_pos=   gap1+inner_d*cm + (gg*cm)*(copyNo-2);
+        G1_pos=  gap2 +inner_d*cm + (gg*cm)*(copyNo-2);
+        G2_pos=  gap3 +inner_d*cm + (gg*cm)*(copyNo-2);
         }
     
-
-   
-       /*z_pos=  z0 + (2.5*cm)*copyNo;
-       G1_pos=  G10 + (2.5*cm)*copyNo;
-       G2_pos=  G20 + (2.5*cm)*copyNo;*/
-       
-
-    
-
         
   G4ThreeVector pos1 = G4ThreeVector(0, 0*cm, z_pos);
   G4ThreeVector posG1 = G4ThreeVector(0, 0*cm, G1_pos);
@@ -279,10 +321,86 @@ Aerog->AddMaterial(CO2, fractionmassCO2);
 	       (16/2)*cm,
 	       (0.3/2)*cm);
   
+//acrylic box
 
+double length = 366.0*mm; 
+double width = 366.0*mm; 
+double height=25*mm;
+double skin = 3.0*mm;
+auto detectorExterior = new G4Box("detectorBoxE", length/2, width/2, height/2);
+auto detectorInterior = new G4Box("detectorBoxI", length/2-skin, width/2-skin, height/2-skin);
+auto detectorWall = new G4SubtractionSolid("detectorBox",detectorExterior,detectorInterior);
+fLogicPlaneAc[copyNo] = new G4LogicalVolume(detectorWall, Acrylic, "logDetectorWall");
+new G4PVPlacement(0, pos1, fLogicPlaneAc[copyNo], "DetectorWall", logicEnv, false,copyNo, checkOverlaps);
+ 
+ auto topPlate = new G4Box("topPlate", 400*mm/2,400*mm/2, 12*mm/2);
+ auto downPlate = new G4Box("downPlate", 400*mm/2,400*mm/2, 12*mm/2);
+ 
+ //side wall
+G4RotationMatrix* rotation = new G4RotationMatrix();
+rotation->rotateZ(90.0 * degree);
+
+ G4ThreeVector pos_w1 = G4ThreeVector(191.5*mm, 0*cm, z_pos);
+ G4ThreeVector pos_w2 = G4ThreeVector(-191.5*mm, 0*cm, z_pos);
+ G4ThreeVector pos_w3 = G4ThreeVector(0*cm, -191.5*mm, z_pos);
+ G4ThreeVector pos_w4 = G4ThreeVector(0*cm,  191.5*mm, z_pos);
+ auto sideWall1 = new G4Box("sideWall1", 17*mm/2, width/2, height/2);
+ auto sideWall2 = new G4Box("sideWall2", 17*mm/2, width/2, height/2);
+ auto sideWall3 = new G4Box("sideWall3", 400*mm/2,17*mm/2, height/2);
+ auto sideWall4 = new G4Box("sideWall4", 400*mm/2,17*mm/2, height/2);
 
  
- 
+
+//mylar sheets
+ auto sheetU = new G4Box("sheetU", 160*mm/2,160*mm/2, 0.25*mm/2);
+ auto sheetL = new G4Box("sheetL", 160*mm/2,160*mm/2, 0.25*mm/2);
+
+ //PCB
+ auto PCBU = new G4Box("PCBU", 160*mm/2,160*mm/2, 1.5*mm/2);
+ auto PCBD = new G4Box("PCBD", 160*mm/2,160*mm/2, 1.5*mm/2);
+
+//copper strips
+auto stripsX = new G4Box("stripsX", 160*mm/2,9*mm/2, 35*um/2);
+auto stripsY = new G4Box("stripsY", 160*mm/2,9*mm/2, 35*um/2);
+
+fLogicPlanePlates[copyNo] = new G4LogicalVolume(topPlate, Acrylic, "logDetectorWall");
+fLogicPlanePlates[copyNo] = new G4LogicalVolume(downPlate, Acrylic, "logDetectorWall");
+
+ fLogicPlaneAc[copyNo] = new G4LogicalVolume(sideWall1, Acrylic, "logDetectorWall");
+ fLogicPlaneAc[copyNo] = new G4LogicalVolume(sideWall2, Acrylic, "logDetectorWall");
+ fLogicPlaneAc[copyNo] = new G4LogicalVolume(sideWall3, Acrylic, "logDetectorWall");
+ fLogicPlaneAc[copyNo] = new G4LogicalVolume(sideWall4, Acrylic, "logDetectorWall");
+
+ fLogicPlaneSheet[copyNo] = new G4LogicalVolume(sheetU,Acrylic , "logDetectorWall");
+ fLogicPlaneSheet[copyNo] = new G4LogicalVolume(sheetL,Acrylic, "logDetectorWall");
+
+ fLogicPlanePCB[copyNo] = new G4LogicalVolume(PCBU,FR4, "logDetectorWall");
+ fLogicPlanePCB[copyNo] = new G4LogicalVolume(PCBD,FR4, "logDetectorWall");
+
+ fLogicPlanestrips[copyNo] = new G4LogicalVolume(stripsX,copper, "logDetectorWall");
+ fLogicPlanestrips[copyNo] = new G4LogicalVolume(stripsY,copper, "logDetectorWall");
+
+  G4RotationMatrix* rotationMatrix = new G4RotationMatrix();
+  rotationMatrix->rotateZ(90.*deg);
+
+new G4PVPlacement( 0, {0.,0.,z_pos-12.5*mm - 6*mm}, fLogicPlanePlates[copyNo], "topPlate", logicEnv, false,copyNo, checkOverlaps);
+new G4PVPlacement( 0, {0.,0.,z_pos+12.5*mm +6*mm}, fLogicPlanePlates[copyNo], "downPlate", logicEnv, false,copyNo, checkOverlaps);
+
+ new G4PVPlacement( rotationMatrix, pos_w1, fLogicPlaneAc[copyNo], "sideWall1", logicEnv, false,copyNo, checkOverlaps);
+ new G4PVPlacement( rotationMatrix, pos_w2, fLogicPlaneAc[copyNo], "sideWall2", logicEnv, false,copyNo, checkOverlaps);
+ new G4PVPlacement(0, pos_w3, fLogicPlaneAc[copyNo], "sideWall3", logicEnv, false,copyNo, checkOverlaps);
+ new G4PVPlacement(0, pos_w4, fLogicPlaneAc[copyNo], "sideWall4", logicEnv, false,copyNo, checkOverlaps);
+
+new G4PVPlacement(0, {0.,0.,G1_pos-0.15*cm-0.0125*cm}, fLogicPlaneSheet[copyNo], "sheetU", logicEnv, false,copyNo, checkOverlaps);
+new G4PVPlacement(0, {0.,0.,G2_pos+0.15*cm+0.0125*cm}, fLogicPlaneSheet[copyNo], "sheetL", logicEnv, false,copyNo, checkOverlaps);
+
+new G4PVPlacement(0, {0.,0.,G1_pos-0.15*cm-0.025*cm-2*0.00175*cm-0.075*cm}, fLogicPlanePCB[copyNo], "PCBU", logicEnv, false,copyNo, checkOverlaps);
+new G4PVPlacement(0, {0.,0.,G2_pos+0.15*cm+0.025*cm+2*0.00175*cm+0.075*cm}, fLogicPlanePCB[copyNo], "PCBD", logicEnv, false,copyNo, checkOverlaps);
+for(int i =0; i<16; i++){
+new G4PVPlacement(0, {0.,-75.45*mm+i*1*cm,G2_pos+0.15*cm+0.025*cm+0.00175*cm}, fLogicPlanestrips[copyNo], "stripsX", logicEnv, false,copyNo, checkOverlaps);
+new G4PVPlacement(rotationMatrix, {-75.45*mm+i*1*cm,0.,G1_pos-0.15*cm-0.025*cm-0.00175*cm}, fLogicPlanestrips[copyNo], "stripsY", logicEnv, false,copyNo, checkOverlaps);
+  }
+
    fLogicPlane[copyNo]=
     new G4LogicalVolume(solidShape1,         //its solid
                         Aerog1,          //its material
@@ -334,20 +452,29 @@ Aerog->AddMaterial(CO2, fractionmassCO2);
   
 
  G4VisAttributes *red = new G4VisAttributes(G4Colour(1.,0.,0.));
+ G4VisAttributes *blue = new G4VisAttributes(G4Colour(0.,0.,1.));
+ G4VisAttributes *green = new G4VisAttributes(G4Colour(0.,1.,0.));
+ G4VisAttributes *rg = new G4VisAttributes(G4Colour(1.,1.,0.));
+ G4VisAttributes *rb = new G4VisAttributes(G4Colour(1.,0.,1.));
+ G4VisAttributes *gb = new G4VisAttributes(G4Colour(0.,1.,1.));
 
   fLogicPlane[copyNo]->SetVisAttributes(red);
+  fLogicPlaneAc[copyNo]->SetVisAttributes(blue);
+  fLogicPlaneSheet[copyNo]->SetVisAttributes(green);
+  fLogicPlanePCB[copyNo]->SetVisAttributes(rg);
+   fLogicPlanestrips[copyNo]->SetVisAttributes(rb);
   fScoringVolume = fLogicPlane[copyNo]; 
 }
 
  // G4ThreeVector pos4 = G4ThreeVector(10*cm,10*cm, 10*cm);
- G4ThreeVector pos4 = G4ThreeVector(10*cm,10*cm, 10*cm);
-  G4Box * solidShape4  = new G4Box("Shape4", (10/2)*cm, (10/2)*cm, (8/2)*cm);
+  G4ThreeVector pos4 = G4ThreeVector(10*cm,10*cm, 10*cm);
+  G4Box * solidShape4  = new G4Box("Shape4", (7/2)*cm, (7/2)*cm, (10/2)*cm);
 
-  G4ThreeVector pos6 = G4ThreeVector(-10*cm,-10*cm, 10*cm);
-  G4Box * solidShape6  = new G4Box("Shape6", (10/2)*cm, (10/2)*cm, (6/2)*cm);
+  G4ThreeVector pos6 = G4ThreeVector(0*cm,0*cm, 19*cm);
+  G4Box * solidShape6  = new G4Box("Shape6", (10/2)*cm, (10/2)*cm, (10/2)*cm);
 
-G4VSolid* box = new G4Box("Box",10*cm,10*cm,5*cm);
-G4VSolid* cylinder = new G4Tubs("Cylinder",0.,5.*cm,2.*cm,0.,2*M_PI*rad);
+G4VSolid* box = new G4Box("Box",3*cm,3*cm,3*cm);
+G4VSolid* cylinder = new G4Tubs("Cylinder",0.,1.*cm,1.*cm,0.,2*M_PI*rad);
 G4VSolid* myunion = new G4UnionSolid("Box+Cylinder", box, cylinder); 
   
   G4double A = 207.2 *g/mole;//lead
@@ -371,17 +498,17 @@ G4Material* Aluminium =  new G4Material("Aluminium", z=13, A, density);
 
 
 
-  /*G4LogicalVolume* logicShape4 = new G4LogicalVolume(solidShape4, Uranium, "Shape4" );
-   new G4PVPlacement(0,                       //no rotation
-                    pos4,                    //at position
-                    logicShape4,             //its logical volume
-                    "Shape4",                //its name
-                    logicEnv,                //its mother  volume
-                    false,                   //no boolean operation
-                    0,                       //copy number
-                    checkOverlaps);          //overlaps checking
+  // G4LogicalVolume* logicShape4 = new G4LogicalVolume(solidShape4, Uranium, "Shape4" );
+  //  new G4PVPlacement(0,                       //no rotation
+  //                   pos4,                    //at position
+  //                   logicShape4,             //its logical volume
+  //                   "Shape4",                //its name
+  //                   logicEnv,                //its mother  volume
+  //                   false,                   //no boolean operation
+  //                   0,                       //copy number
+  //                   checkOverlaps);          //overlaps checking
 
- G4LogicalVolume* logicShape6 = new G4LogicalVolume(solidShape6,Aluminium, "Shape6" );
+ G4LogicalVolume* logicShape6 = new G4LogicalVolume(solidShape6,Iron, "Shape6" );
    new G4PVPlacement(0,                       //no rotation
                     pos6,                    //at position
                     logicShape6,             //its logical volume
@@ -389,8 +516,12 @@ G4Material* Aluminium =  new G4Material("Aluminium", z=13, A, density);
                     logicEnv,                //its mother  volume
                     false,                   //no boolean operation
                     0,                       //copy number
-                    checkOverlaps);          //overlaps checking  */
-                    
+                    checkOverlaps);          //overlaps checking  
+                   
+G4VisAttributes *gb = new G4VisAttributes(G4Colour(0.2,.2,.2));
+
+   logicShape6->SetVisAttributes(gb);
+
 
 /*G4LogicalVolume* logicShape7  = new G4LogicalVolume(myunion,Uranium, "Box+Cylinder" );
    new G4PVPlacement(0,                       //no rotation
@@ -399,10 +530,10 @@ G4Material* Aluminium =  new G4Material("Aluminium", z=13, A, density);
                     "Box+Cylinder",                //its name
                     logicEnv,                //its mother  volume
                     false,                   //no boolean operation
-                    0,                       //copy number
-                    checkOverlaps);  */
+                    0,                       //copy number{0.,-75.45*mm+i*1*cm,G2_pos+0.1625*cm+.0875*cm+0.075*cm+0.00175*cm}
+                    checkOverlaps);  
    
-  
+  */
   //always return the physical World
 
   //////////////////////////////////////////////////////////////////////////////////////////////

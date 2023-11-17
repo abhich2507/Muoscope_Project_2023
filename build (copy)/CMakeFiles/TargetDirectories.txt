@@ -1,8 +1,0 @@
-/home/abhishek/Project/MuoScope/build/CMakeFiles/exampleB1.dir
-/home/abhishek/Project/MuoScope/build/CMakeFiles/B1.dir
-/home/abhishek/Project/MuoScope/build/CMakeFiles/edit_cache.dir
-/home/abhishek/Project/MuoScope/build/CMakeFiles/rebuild_cache.dir
-/home/abhishek/Project/MuoScope/build/CMakeFiles/list_install_components.dir
-/home/abhishek/Project/MuoScope/build/CMakeFiles/install.dir
-/home/abhishek/Project/MuoScope/build/CMakeFiles/install/local.dir
-/home/abhishek/Project/MuoScope/build/CMakeFiles/install/strip.dir

@@ -79,7 +79,7 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
    auto myrootManager = ROOTManager::Instance();
   
    
-   //myrootManager->ROOTTreeStruct.NScintHit= nScintHit;
+   //myrootManager->ROOTTreeStruct.NRPCHit= nRPCHit;
 
   if(hcID<0) hcID = G4SDManager::GetSDMpointer()->GetCollectionID("SensitiveDetectorHitsCollection");
   G4HCofThisEvent* hce = event->GetHCofThisEvent();
@@ -90,11 +90,12 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
    // G4cout<<" numbER of enTRIES:   "<<nHits<<G4endl;
  
    //G4float eDep=0.;
-   G4int nScintHit=0;
+   G4int nRPCHit=0;
+    myrootManager->ROOTTreeStruct.NGenPart= 0;
  
   for (G4int iHit=0; iHit<nHits; ++iHit){
     SensitiveDetectorHit*  newHit = (*fHitsCollection)[iHit];
-    //   myrootManager->ROOTTreeStruct.ScintHitE[myrootManager->ROOTTreeStruct.NScintHit] =
+    //   myrootManager->ROOTTreeStruct.RPCHitE[myrootManager->ROOTTreeStruct.NRPCHit] =
     //      (float_t)newHit->GetEdep();
        
        
@@ -123,18 +124,18 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
     analysisManager->FillNtupleDColumn(0,7, eventid);
     analysisManager->AddNtupleRow(0);
      
-      nScintHit+=1;
-      myrootManager->ROOTTreeStruct.NScintHit= nScintHit;
+      nRPCHit+=1;
+      myrootManager->ROOTTreeStruct.NRPCHit= nRPCHit;
       myrootManager->ROOTTreeStruct.Event= eventid;
-      myrootManager->ROOTTreeStruct.ScintHitE[myrootManager->ROOTTreeStruct.NScintHit-1]=edep;
-      myrootManager->ROOTTreeStruct.ScintHitPosX[myrootManager->ROOTTreeStruct.NScintHit-1]= (G4float) pos[0];
-      myrootManager->ROOTTreeStruct.ScintHitPosY[myrootManager->ROOTTreeStruct.NScintHit-1]= (G4float) pos[1];
-      myrootManager->ROOTTreeStruct.ScintHitPosZ[myrootManager->ROOTTreeStruct.NScintHit-1]= (G4float) pos[2];
-      myrootManager->ROOTTreeStruct.ScintHitPz[myrootManager->ROOTTreeStruct.NScintHit-1]=Pz;
-      myrootManager->ROOTTreeStruct.ScintHitStation[myrootManager->ROOTTreeStruct.NScintHit-1]=  PlaneNb;
-      myrootManager->ROOTTreeStruct.HitPDG[myrootManager->ROOTTreeStruct.NScintHit-1]= (G4int) pdgid ;
-      myrootManager->ROOTTreeStruct.ScintHitTrackID[myrootManager->ROOTTreeStruct.NScintHit-1]= (G4int) trackid;
-      myrootManager->ROOTTreeStruct.ScintHitTrackLength[myrootManager->ROOTTreeStruct.NScintHit-1]= (G4float) tracklength_test;
+      myrootManager->ROOTTreeStruct.RPCHitE[myrootManager->ROOTTreeStruct.NRPCHit-1]=edep;
+      myrootManager->ROOTTreeStruct.RPCHitPosX[myrootManager->ROOTTreeStruct.NRPCHit-1]= (G4float) pos[0];
+      myrootManager->ROOTTreeStruct.RPCHitPosY[myrootManager->ROOTTreeStruct.NRPCHit-1]= (G4float) pos[1];
+      myrootManager->ROOTTreeStruct.RPCHitPosZ[myrootManager->ROOTTreeStruct.NRPCHit-1]= (G4float) pos[2];
+      myrootManager->ROOTTreeStruct.RPCHitPz[myrootManager->ROOTTreeStruct.NRPCHit-1]=Pz;
+      myrootManager->ROOTTreeStruct.RPCHitStation[myrootManager->ROOTTreeStruct.NRPCHit-1]=  PlaneNb;
+      myrootManager->ROOTTreeStruct.HitPDG[myrootManager->ROOTTreeStruct.NRPCHit-1]= (G4int) pdgid ;
+      myrootManager->ROOTTreeStruct.RPCHitTrackID[myrootManager->ROOTTreeStruct.NRPCHit-1]= (G4int) trackid;
+      myrootManager->ROOTTreeStruct.RPCHitTrackLength[myrootManager->ROOTTreeStruct.NRPCHit-1]= (G4float) tracklength_test;
      
         
   }
@@ -155,7 +156,7 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
   
 
 
-   auto eventID = event->GetEventID();
+  auto eventID = event->GetEventID();
   auto printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
   if ( ( printModulo == 0 ) || ( eventID % printModulo != 0 ) ) 
     return;
@@ -168,7 +169,7 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
 
      for(G4int i =0; i<event->GetNumberOfPrimaryVertex(); i++){
        nGenPart=event->GetPrimaryVertex(i)->GetNumberOfParticle();
-        myrootManager->ROOTTreeStruct.NGenPart= nGenPart;
+        //myrootManager->ROOTTreeStruct.NGenPart= 0;
       for(G4int q=0; q<event->GetPrimaryVertex(i)->GetNumberOfParticle(); q++){
 	
 	auto  primary= event->GetPrimaryVertex(i)->GetPrimary(q);
@@ -185,18 +186,20 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
       
 
       analysisManager->AddNtupleRow(1);
-      nGenPart+=1;
-      KE+=ke;
-      Theta+=theta;
-      Phi+=phi;
-      Pz+=pz[2];
+      // nGenPart+=1;
+      // KE+=ke;
+      // Theta+=theta;
+      // Phi+=phi;
+      // Pz+=pz[2];
       //  G4cout<<"spor me   "<< nGenPart<<G4endl;
-	// myrootManager->ROOTTreeStruct.GenPartE[ myrootManager->ROOTTreeStruct.NGenPart]= KE;
-	myrootManager->ROOTTreeStruct.GenPartE= Pz;
-       myrootManager->ROOTTreeStruct.GenPartTheta=Theta;
-       myrootManager->ROOTTreeStruct.GenPartPhi= Phi;
-       myrootManager->ROOTTreeStruct.GenPartPDG= pdgid;
-       
+	
+	   // myrootManager->ROOTTreeStruct.GenPartM= Pz;
+       myrootManager->ROOTTreeStruct.GenPartE[  myrootManager->ROOTTreeStruct.NGenPart]= ke;
+
+       myrootManager->ROOTTreeStruct.GenPartTheta[  myrootManager->ROOTTreeStruct.NGenPart]=theta;
+       myrootManager->ROOTTreeStruct.GenPartPhi[  myrootManager->ROOTTreeStruct.NGenPart]= phi;
+       myrootManager->ROOTTreeStruct.GenPartPDG[  myrootManager->ROOTTreeStruct.NGenPart]= pdgid;
+         myrootManager->ROOTTreeStruct.NGenPart++;
                  }
       //   myrootManager->Fill();
      
