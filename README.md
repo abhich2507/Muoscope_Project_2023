@@ -18,14 +18,14 @@ Clone the Repository:
 
 bash
 
-git clone https://github.com/your_username/muon-telescope.git
+git clone https://github.com/abhich2507/muon-telescope.git
 cd muon-telescope
 
 Create a Build Directory:
 
 bash
 
-mkdir build
+mkdir build &&
 cd build
 
 CMake Configuration:
